@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}
+<title>
+    {{ data.name }}
+</title>
+    
+{% endblock title %}
+{% block body %}
+<div class="has-text-centered">
+    <h2 class="is-size-2 has-text-centered">{{ data.name }}</h2>
+<a class="button is-primary-light" href="{{ data.routine }}">
+    <h4 style="text-align: center;">Routine</h4>
+</a>
+</div>
+<div>
+    {% for _,module in data.modules.items %}
+    <div class="box">
+        <a href="{{ module.id }}">{{ module.name }}</a>
+    </div>
+        
+    {% endfor %}
+</div>
+
+
+{% endblock %}
