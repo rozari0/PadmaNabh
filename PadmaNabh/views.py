@@ -10,7 +10,7 @@ def courseview(request, slug):
         if data.get(slug):
             context = data.get(slug)
         else:
-            context = get_cached_data(slug)[0].get('data')
+            context = get_cached_data(slug)[0].get("data")
             print(context)
             data[slug] = context
     except Exception as e:
@@ -20,5 +20,5 @@ def courseview(request, slug):
 
 
 def moduleview(request, slug, module):
-    context = get_cached_data(slug)[0].get('data').get('modules').get(module)
-    return render(request, template_name="module.html",context={'modules':context})
+    context = get_cached_data(slug)[0].get("data").get("modules").get(module)
+    return render(request, template_name="module.html", context={"modules": context})

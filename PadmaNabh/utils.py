@@ -27,7 +27,7 @@ def getdata(slug):
     # full-stack-web-development-with-mern
     response = requests.get(f"https://bohubrihi.com/track/{slug}")
     html = response.text
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, "lxml")
 
     script_tag = soup.find("script", id="__NEXT_DATA__")
 
@@ -85,4 +85,4 @@ def get_cached_data(slug):
         get_cached_data(slug)
 
 
-#print(get_cached_data("full-stack-web-development"))
+# print(get_cached_data("full-stack-web-development"))

@@ -1,43 +1,33 @@
 {% extends 'base.html' %}
 {% block title %}
-<title>
-  {{ modules.name }}
-</title>
+<title>{{ modules.name }}</title>
 {% endblock title %}
- {% block body %}
+{% block body %}
 <div class="has-text-centered">
   <h2 class="is-size-2 has-text-centered">{{ modules.name }}</h2>
 </div>
 <div>
-  <video
-    id="player"
-    playsinline
-    controls
-    data-poster="https://bitdash-a.akamaihd.net/content/sintel/poster.png"
-    style="display: none;"
-  ></video>
+  <div class="motherplyr">
+    <video id="plyr" class="plyr" playsinline controls
+      data-poster="https://bitdash-a.akamaihd.net/content/sintel/poster.png" style="display: none">
+    </video>
+  </div>
   <h3 class="is-size-4 has-text-centered" id="videotitle"></h3>
 </div>
 <hr />
 <hr />
 <div>
   {% for fraction in modules.fraction.values %}
-  <div class="box" id="{{fraction.id}}">
+  <div class="box" id="{{ fraction.id }}">
     <h3 class="has-text-centered">{{ fraction.name }}</h3>
     {% for video in fraction.videos.values %}
     <details>
-      <summary
-        id="{{ video.playback_url }}"
-        onclick="loadvideo(this.id, this.innerText)"
-      >
-        {{ video.name }}
-      </summary>
+      <summary id="{{ video.playback_url }}" onclick="loadvideo(this.id, this.innerText)">{{ video.name }}</summary>
       <!-- <p>{{ video.description}} </p> -->
     </details>
-    {% endfor %} 
+    {% endfor %}
     <!-- {{ fraction }} -->
   </div>
-
   {% endfor %}
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js"></script>
@@ -45,24 +35,43 @@
 <script>
   function loadvideo(source, title) {
     document.getElementById("videotitle").innerText = title;
-    document.getElementById("player").style.display = "block";
     document.documentElement.scrollTop = 0;
-    const video = document.querySelector("video");
+    var video = document.getElementsByClassName("plyr")[0];
+    video.remove();
+    var video = document.createElement('video');
+    video.id = "plyr";
+    video.className = "plyr";
+    video.setAttribute("playsinline", "");  // Set playsinline attribute
+    video.controls = true;                   // Enable controls
+    video.style.display = "block";           // Initially hide the video
+    video.setAttribute("data-poster", "https://bitdash-a.akamaihd.net/content/sintel/poster.png");
+    document.getElementsByClassName("motherplyr")[0].appendChild(video)
     const player = new Plyr(video);
 
-    if (!Hls.isSupported()) {
-      video.src = source;
-    } else {
-      // For more Hls.js options, see https://github.com/dailymotion/hls.js
-      const hls = new Hls();
-      hls.loadSource(source);
-      hls.attachMedia(video);
-      window.hls = hls;
+    if (source.toLowerCase().indexOf('youtu') !== -1) {
+      player.source = {
+        type: 'video',
+        sources: [
+          {
+            src: source,
+            provider: 'youtube',
+          },
+        ],
+      };
+      window.player = player;
+    }
+    else {
+      if (!Hls.isSupported()) {
+        video.src = source;
+      } else {
+        const hls = new Hls();
+        hls.loadSource(source);
+        hls.attachMedia(video);
+        window.hls = hls;
+        window.player = player;
+      }
     }
 
-    // Expose player so it can be used from the console
-    window.player = player;
   }
 </script>
-
 {% endblock %}

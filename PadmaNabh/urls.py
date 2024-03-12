@@ -1,5 +1,5 @@
 from django.urls import path
-from PadmaNabh.views import courseview,moduleview
+from PadmaNabh.views import courseview, moduleview
 
 urlpatterns = [
     path("course/<str:slug>/", courseview, name="course"),
