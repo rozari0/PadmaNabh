@@ -51,10 +51,14 @@
     document.documentElement.scrollTop = 0;
 
     var videoContainer = document.getElementsByClassName("motherplyr")[0];
-    videoContainer.innerHTML = '<video id="plyr" class="plyr" playsinline controls data-poster="https://bitdash-a.akamaihd.net/content/sintel/poster.png"></video>';
+    videoContainer.innerHTML = '<video id="plyr" class="plyr" playsinline controls></video>';
     
     var video = document.getElementById("plyr");
-    const player = new Plyr(video);
+    const player = new Plyr(video,{
+      keyboard: { focused: true, global: true },
+      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings','quality', 'fullscreen'],
+      settings: ['captions', 'quality', 'speed'],
+    });
 
     if (source.toLowerCase().includes('youtu')) {
         player.source = {
