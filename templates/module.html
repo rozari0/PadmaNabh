@@ -1,77 +1,78 @@
 {% extends 'base.html' %}
-{% block title %}
-<title>{{ modules.name }}</title>
-{% endblock title %}
+
+{% block title %}{{ modules.name }}{% endblock title %}
+
 {% block body %}
-<div class="has-text-centered">
-  <h2 class="is-size-2 has-text-centered">{{ modules.name }}</h2>
-</div>
-<div>
-  <div class="motherplyr">
-    <video id="plyr" class="plyr" playsinline controls
-      data-poster="https://bitdash-a.akamaihd.net/content/sintel/poster.png" style="display: none">
-    </video>
-  </div>
-  <h3 class="is-size-4 has-text-centered" id="videotitle"></h3>
-</div>
-<hr />
-<hr />
-<div>
-  {% for fraction in modules.fraction.values %}
-  <div class="box" id="{{ fraction.id }}">
-    <h3 class="has-text-centered">{{ fraction.name }}</h3>
-    {% for video in fraction.videos.values %}
-    <details>
-      <summary id="{{ video.playback_url }}" onclick="loadvideo(this.id, this.innerText)">{{ video.name }}</summary>
-      <!-- <p>{{ video.description}} </p> -->
-    </details>
-    {% endfor %}
-    <!-- {{ fraction }} -->
-  </div>
-  {% endfor %}
-</div>
+<section class="section">
+    <div class="container">
+        <div class="box has-text-centered">
+            <h2 class="title is-2">{{ modules.name }}</h2>
+        </div>
+
+        <!-- Video Player Section -->
+        <div class="card">
+            <div class="card-content has-text-centered">
+                <div class="motherplyr">
+                    <video id="plyr" class="plyr" playsinline controls data-poster="https://bitdash-a.akamaihd.net/content/sintel/poster.png" style="display: none">
+                    </video>
+                </div>
+                <h3 class="is-size-4 has-text-centered mt-4" id="videotitle"></h3>
+            </div>
+        </div>
+
+        <hr />
+
+        <!-- Video Sections -->
+        <div class="columns is-multiline">
+            {% for fraction in modules.fraction.values %}
+                <div class="column is-half">
+                    <div class="box" id="{{ fraction.id }}">
+                        <h3 class="title is-4 has-text-centered">{{ fraction.name }}</h3>
+                        {% for video in fraction.videos.values %}
+                            <details class="mb-2">
+                                <summary id="{{ video.playback_url }}" onclick="loadvideo(this.id, this.innerText)">
+                                    🎬 {{ video.name }}
+                                </summary>
+                            </details>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Video Player Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js"></script>
 <script src="https://cdn.rawgit.com/video-dev/hls.js/18bb552/dist/hls.min.js"></script>
 <script>
   function loadvideo(source, title) {
     document.getElementById("videotitle").innerText = title;
     document.documentElement.scrollTop = 0;
-    var video = document.getElementsByClassName("plyr")[0];
-    video.remove();
-    var video = document.createElement('video');
-    video.id = "plyr";
-    video.className = "plyr";
-    video.setAttribute("playsinline", "");  // Set playsinline attribute
-    video.controls = true;                   // Enable controls
-    video.style.display = "block";           // Initially hide the video
-    video.setAttribute("data-poster", "https://bitdash-a.akamaihd.net/content/sintel/poster.png");
-    document.getElementsByClassName("motherplyr")[0].appendChild(video)
+
+    var videoContainer = document.getElementsByClassName("motherplyr")[0];
+    videoContainer.innerHTML = '<video id="plyr" class="plyr" playsinline controls data-poster="https://bitdash-a.akamaihd.net/content/sintel/poster.png"></video>';
+    
+    var video = document.getElementById("plyr");
     const player = new Plyr(video);
 
-    if (source.toLowerCase().indexOf('youtu') !== -1) {
-      player.source = {
-        type: 'video',
-        sources: [
-          {
-            src: source,
-            provider: 'youtube',
-          },
-        ],
-      };
-      window.player = player;
-    }
-    else {
-      if (!Hls.isSupported()) {
-        video.src = source;
-      } else {
-        const hls = new Hls();
-        hls.loadSource(source);
-        hls.attachMedia(video);
-        window.hls = hls;
-        window.player = player;
-      }
+    if (source.toLowerCase().includes('youtu')) {
+        player.source = {
+            type: 'video',
+            sources: [{ src: source, provider: 'youtube' }]
+        };
+    } else {
+        if (!Hls.isSupported()) {
+            video.src = source;
+        } else {
+            const hls = new Hls();
+            hls.loadSource(source);
+            hls.attachMedia(video);
+            window.hls = hls;
+        }
     }
 
+    window.player = player;
   }
 </script>
 {% endblock %}
